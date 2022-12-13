@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.Meeting.mappers">
+
+	<select id="meetingUidList" parameterType="String" resultType="com.tring.domain.MeetingVO">
+		select *
+		from tbl_meeting_authority
+		where user_uid = #{user_uid}
+	</select>
+
+	<select id="meetingList" parameterType="com.tring.domain.MeetingVO" resultType="com.tring.domain.MeetingVO">
+		select *
+		from tbl_meeting
+
+		<!-- 마스터 -->
+		<if test="user_authority == 1">
+		where company_code = #{company_code}
+		</if>
+		
+		<!-- 사원, 개인 유저 -->
+		<if test="user_authority == 2 || user_authority == 3">
+		where meeting_uid in
+		<foreach collection="meeting_uid_list" index='index' item="meeting_uid_list" open='(' close=')' separator=','>
+		#{meeting_uid_list}
+		</foreach>
+		</if>
+
+	</select>
+
+	<select id="meetingDetail" parameterType="com.tring.domain.MeetingVO" resultType="com.tring.domain.MeetingVO">
+		select * from tbl_meeting
+		where meeting_uid = #{meeting_uid}
+	</select>
+
+	<insert id="meetingInsert" parameterType="com.tring.domain.MeetingVO">
+		INSERT INTO tbl_meeting (meeting_uid, company_code, meeting_name, meeting_place, meeting_startDate, meeting_endDate, meeting_memo, meeting_content, meeting_before, save_status) 
+		values(#{meeting_uid}, #{company_code}, #{meeting_name}, #{meeting_place}, #{meeting_startDate}, #{meeting_endDate}, #{meeting_memo}, #{meeting_content}, #{meeting_before}, #{save_status});
+	</insert>
+	
+	<update id="meetingUpdate" parameterType="com.tring.domain.MeetingVO">
+		UPDATE tbl_meeting 
+		SET
+		meeting_name = #{meeting_name},
+		meeting_place = #{meeting_place},
+		meeting_startDate = #{meeting_startDate},
+		meeting_endDate = #{meeting_endDate},
+		meeting_memo = #{meeting_memo},
+		meeting_content = #{meeting_content},
+		meeting_before = #{meeting_before},
+		save_status = #{save_status}
+		
+		where meeting_uid = #{meeting_uid}
+	</update>
+	
+	<delete id="meetingDelete" parameterType="String">
+		delete
+			from tbl_meeting
+		where meeting_uid = #{meeting_uid}
+	</delete>
+	
+	<select id="meetingMember" parameterType="com.tring.domain.MeetingVO" resultType="String">
+		select user_uid from tbl_memo_authority
+		where meeting_uid = #{meeting_uid}
+	</select>
+	
+	<insert id="meetingMemberInsert" parameterType="com.tring.domain.MeetingVO">
+		INSERT INTO tbl_memo_authority (meeting_uid, user_uid, user_email, meeting_authority)
+		values(#{meeting_uid}, #{user_uid}, #{user_email}, #{meeting_authority});
+	</insert>
+	
+	<delete id="meetingMemberDelete" parameterType="com.tring.domain.MeetingVO">
+		delete
+			from tbl_memo_authority
+		where meeting_uid = #{meeting_uid}
+		and user_uid = #{user_uid}
+	</delete>
+	
+	<insert id="meetingFileUpload" parameterType="com.tring.domain.MeetingVO">
+		INSERT INTO tbl_meeting_file (meeting_uid, original_fileName, save_fileName, file_size) 
+		values(#{meeting_uid}, #{original_fileName}, #{save_fileName}, #{file_size});
+	</insert>
+</mapper>

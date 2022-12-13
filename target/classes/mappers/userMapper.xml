@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.user.mappers">
+
+	<insert id="userInsert" parameterType="com.tring.domain.ResultVO">
+		INSERT INTO tbl_user (user_uid, company_code, user_email, user_password, department_code, user_position, user_name, user_phone, user_regdate, user_authority, user_login_type, user_icon) 
+		values(#{user_uid}, #{company_code}, #{user_email}, #{user_password}, #{department_code}, #{user_position}, #{user_name}, #{user_phone}, now(), #{user_authority}, #{user_login_type}, 0);
+	</insert>
+
+	<select id="companyLogin" parameterType="com.tring.domain.ResultVO" resultType="com.tring.domain.ResultVO">
+		select *
+		from tbl_user
+		where user_email = #{user_email}
+	</select>
+
+	<select id="userInfo" parameterType="String" resultType="com.tring.domain.MemberVO">
+		select *
+		from tbl_user
+		where user_uid = #{user_uid}
+	</select>
+	
+	<select id="userAccess_deptUid" parameterType="String" resultType="String">
+		select department_code
+		from tbl_department_authority
+		where user_uid = #{user_uid}
+	</select>
+	
+	<update id="userRecordLog" parameterType="com.tring.domain.ResultVO">
+		UPDATE tbl_user 
+		SET
+		user_logdate = now()
+		
+		where user_uid = #{user_uid}
+	</update>
+	
+	<update id="userPwdUpdate" parameterType="com.tring.domain.ResultVO">
+		UPDATE tbl_user 
+		SET
+		user_password = #{user_password}
+		
+		where user_uid = #{user_uid}
+	</update>
+	
+	<update id="userIconUpdate" parameterType="com.tring.domain.ResultVO">
+		UPDATE tbl_user 
+		SET
+		user_icon = #{user_icon}
+		
+		where user_uid = #{user_uid}
+	</update>
+	
+	<update id="userDeptUpdate" parameterType="hashMap">
+		UPDATE tbl_user 
+		SET
+		department_code = #{department_code}
+		
+		where user_uid = #{user_uid}
+	</update>
+	
+	<update id="userInfoUpdate" parameterType="com.tring.domain.ResultVO">
+		UPDATE tbl_user 
+		SET
+		department_code = #{department_code},
+		user_position = #{user_position},
+		user_name = #{user_name},
+		user_phone = #{user_phone}
+		
+		where user_uid = #{user_uid}
+	</update>
+	
+	<delete id="userInfoDelete" parameterType="string">
+		delete
+			from tbl_user
+		where user_uid = #{user_uid}
+	</delete>
+	
+	
+	
+	<select id="userSearch" parameterType="com.tring.domain.ResultVO" resultType="com.tring.domain.MemberVO">
+		select *
+		from tbl_user
+		<if test="search_type == 'emailCheck'">
+		where user_email = #{search_keyword}
+		</if>
+		<if test="search_type == 'userEmail'">
+		where user_email like #{search_keyword}
+		</if>
+		<if test="search_type == 'companyUserAll'">
+		where company_code = #{company_code}
+		</if>
+		<if test="search_type == 'companyUserName'">
+		where company_code = #{company_code}
+		and user_name like #{search_keyword}
+		</if>
+		
+		order by user_name
+	</select>
+	
+	<select id="adressUserSearch" parameterType="com.tring.domain.ResultVO" resultType="com.tring.domain.AdressMemberVO">
+		select *
+		from tbl_user_adress
+		<if test="search_type == 'name'">
+		where adress_user_name like #{search_keyword}
+		</if>
+		<if test="search_type == 'email'">
+		where adress_user_email like #{search_keyword}
+		</if>
+		<if test="search_type == 'phone'">
+		where adress_user_phone like #{search_keyword}
+		</if>
+		and user_uid = #{user_uid}
+	</select>
+	
+	
+	
+	<select id="adressUserList" parameterType="string" resultType="com.tring.domain.AdressMemberVO">
+		select *
+		from tbl_user_adress
+		where user_uid = #{user_uid}
+	</select>
+	
+	<insert id="adressUserInsert" parameterType="com.tring.domain.ResultVO">
+		INSERT INTO tbl_user_adress (user_uid, adress_user_uid, adress_user_email, adress_user_name, adress_user_phone, adress_user_company, adress_user_department, adress_user_position)
+		values(#{user_uid}, #{adress_user_uid}, #{user_email}, #{user_name}, #{user_phone}, #{company_name}, #{department_name}, #{user_position})
+	</insert>
+	
+	<update id="adressUserUpdate" parameterType="com.tring.domain.ResultVO">
+		UPDATE tbl_user_adress 
+		SET
+		adress_user_email = #{user_email},
+		adress_user_name = #{user_name},
+		adress_user_phone = #{user_phone},
+		adress_user_company = #{company_name},
+		adress_user_department = #{department_name},
+		adress_user_position = #{user_position}
+		
+		where adress_user_uid = #{adress_user_uid}
+		and user_uid = #{user_uid}
+	</update>
+	<delete id="adressUserDelete" parameterType="com.tring.domain.ResultVO">
+		delete
+			from tbl_user_adress
+		where user_uid = #{user_uid}
+		and adress_user_uid = #{adress_user_uid}
+	</delete>
+	
+</mapper>

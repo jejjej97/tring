@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration 
+	PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+	<configuration>
+	
+		<typeAliases>
+	<!-- 	<typeAlias type="com.example.dto.Ad_User" alias="Ad_User"/>
+			<typeAlias type="com.example.dto.AdVO" alias="AdVO"/>
+			<typeAlias type="com.example.dto.EV_form" alias="EVO"/> -->
+		</typeAliases>
+		
+	</configuration>
+	

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<bean id="dbPropertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"> 
+	<property name="locations"> <list> 
+	<value>classpath:config/db.properties</value> 
+	</list> 
+	</property> 
+	</bean>
+
+	<!-- MySQL dataSource -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${db.driver}"></property>
+		<property name="url" value="${db.url}"></property>
+		<property name="username" value="${db.username}"></property>
+		<property name="password" value="${db.password}"></property>
+	</bean>
+		<!-- mybatis SqlSessionFactoryBean -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="configLocation" value="classpath:/mybatis-config.xml"></property>
+		<property name="mapperLocations" value="classpath:mappers/**/**.xml"></property>
+	</bean>
+	
+		<!-- mybatis 	 -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate"
+		destroy-method="clearCache">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"></constructor-arg>
+	</bean>
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl"> 
+    	<property name="host" value="smtp.gmail.com" />
+ 		<property name="port" value="587" />
+		<property name="username" value="beginit20@gmail.com"/> <!-- 자신의 이메일 아이디 -->
+	 	<property name="password" value="yfazwxtbgxdmwlzp"/> <!-- 자신의 비밀번호 -->
+		 <!-- 보안연결 TLS과 관련된 설정 -->
+	     <property name="javaMailProperties">
+		    <props>
+		       <prop key="mail.smtp.starttls.enable">true</prop>
+		       <prop key="mail.smtp.auth">true</prop>
+		       <prop key="mail.transport.protocol">smtp</prop>
+		       <prop key="mail.debug">true</prop>
+		       <prop key="mail.smtp.ssl.trust">smtp.gmail.com</prop>
+			   <prop key="mail.smtp.ssl.protocols">TLSv1.2</prop>
+		    </props>
+	     </property>
+	 </bean>
+	
+	<context:component-scan base-package="com.view.controller" />
+	
+	<context:component-scan base-package="com.common.controller" />
+	<context:component-scan base-package="com.common.dao" />
+	<context:component-scan base-package="com.common.service" />
+	
+	<context:component-scan base-package="com.company.controller" />
+	<context:component-scan base-package="com.company.dao" />
+	<context:component-scan base-package="com.company.service" />
+	
+	<context:component-scan base-package="com.data.controller" />
+	<context:component-scan base-package="com.data.dao" />
+	<context:component-scan base-package="com.data.service" />
+	
+	<context:component-scan base-package="com.user.controller" />
+	<context:component-scan base-package="com.user.dao" />
+	<context:component-scan base-package="com.user.service" />
+	
+	<context:component-scan base-package="com.tring.domain" />
+</beans>

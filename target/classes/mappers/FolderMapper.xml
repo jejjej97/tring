@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.folder.mappers">
+
+	<select id="userFolderList" parameterType="com.tring.domain.FolderVO" resultType="com.tring.domain.FolderVO">
+		select *
+		from tbl_user_folder
+		where user_uid = #{user_uid}
+		<if test="folder_level == 0">
+		and user_folder_highrank is null
+		</if>
+		<if test="folder_level != 0">
+		and user_folder_highrank = #{folder_highrank}
+		</if>
+		and user_folder_del = 0
+		order by user_folder_regdate
+	</select>
+	<select id="userFolderDown_uid" parameterType="string" resultType="string">
+		select user_folder_uid
+		from tbl_user_folder
+		where user_folder_highrank = #{folder_uid}
+	</select>
+
+	<insert id="userFolderInsert" parameterType="com.tring.domain.FolderVO">
+		INSERT INTO tbl_user_folder (user_folder_uid, user_uid, user_folder_name, user_folder_highrank, user_folder_level, user_folder_regdate, user_folder_type, user_folder_dataType) 
+		values(#{folder_uid}, #{user_uid}, #{folder_name}, #{folder_highrank}, #{folder_level}, now(), #{folder_type}, #{folder_dataType})
+	</insert>
+
+	<update id="userFolderNameUpdate" parameterType="com.tring.domain.FolderVO">
+		UPDATE tbl_user_folder 
+		SET
+		user_folder_name = #{folder_name}
+		
+		where user_folder_uid = #{folder_uid}
+	</update>
+	<update id="userFolderMove" parameterType="com.tring.domain.FolderVO">
+		UPDATE tbl_user_folder 
+		SET
+		user_folder_highrank = #{folder_highrank},
+		user_folder_level = #{folder_level}
+		
+		where user_folder_uid = #{folder_uid}
+	</update>
+	<update id="userFolderMove_level" parameterType="hashMap">
+		UPDATE tbl_user_folder 
+		SET
+		user_folder_level = #{folder_level}
+		
+		where user_folder_uid = #{folder_uid}
+	</update>
+
+	<update id="userFolderDelete" parameterType="com.tring.domain.FolderVO">
+		UPDATE tbl_user_folder 
+		SET
+		user_folder_del = 1,
+		user_folder_del_regdate = now()
+		
+		where user_folder_uid = #{folder_uid}
+	</update>
+	
+	<!-- 폴더내의 Data -->
+	<select id="userFolderDataList" parameterType="string" resultType="com.tring.domain.FolderVO">
+		select *
+		from tbl_user_folder_data
+		where user_folder_uid = #{folder_uid}
+	</select>
+	<select id="userFolderDataUid_check" parameterType="string" resultType="string">
+		select data_uid
+		from tbl_user_folder_data
+		where user_folder_uid = #{folder_uid}
+	</select>
+	
+	<insert id="userFolderDataInsert" parameterType="com.tring.domain.FolderVO">
+		INSERT INTO tbl_user_folder_data (user_folder_uid, data_uid) 
+		values(#{folder_uid}, #{data_uid})
+	</insert>
+	
+	<update id="userFolderDataMove" parameterType="com.tring.domain.FolderVO">
+		UPDATE tbl_user_folder_data 
+		SET
+		user_folder_uid = #{folder_uid}
+		
+		where data_uid = #{data_uid}
+	</update>
+	
+	<delete id="userFolderDataDelete" parameterType="com.tring.domain.FolderVO">
+		delete
+			from tbl_user_folder_data
+		where data_uid = #{data_uid}
+		and user_folder_uid = #{folder_uid}
+	</delete>
+
+</mapper>
